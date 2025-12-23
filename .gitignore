@@ -6,4 +6,5 @@ build/
 *.pdb
 *.ilk
 *.user
-
+*.dll
+_deps/
