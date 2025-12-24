@@ -21,16 +21,11 @@ void Visualizer::drawScene(int nodeCount, Node* nodes, int totalCost, std::vecto
     window->clear(sf::Color(30, 30, 30)); // 改为深灰色背景
 
     //1绘制状态栏
-    // 添加半透明背景
-    sf::RectangleShape statusBg(sf::Vector2f(400, 60));
-    statusBg.setFillColor(sf::Color(0, 0, 0, 150));
-    statusBg.setPosition(5, 5);
-    window->draw(statusBg);
 
     sf::Text status;
     status.setFont(font);
     status.setCharacterSize(20);
-    status.setFillColor(sf::Color::White); // 改为白色文字
+    status.setFillColor(sf::Color::Green); // 绿色
     status.setPosition(15,15);
     status.setString("Total Cost: " + std::to_string(totalCost) );
     window->draw(status);
@@ -41,19 +36,19 @@ void Visualizer::drawScene(int nodeCount, Node* nodes, int totalCost, std::vecto
         sf::Color color = sf::Color(100, 100, 100); // 默认深灰色
         float thickness = 2.0;
 
-        if (e.state == 1) // Checking
+        if (e.state == 1) // 检查
         {
-            color = sf::Color(255, 215, 0); // 金色/黄色
+            color = sf::Color(255, 215, 0); // 黄色
             thickness = 4.0;
         }
-        else if (e.state == 2) // Linked
+        else if (e.state == 2) // 联通
         {
-            color = sf::Color(50, 205, 50); // 鲜绿色
+            color = sf::Color(50, 205, 50); // 绿色
             thickness = 4.0;
         }
-        else if (e.state == 3) // Loop
+        else if (e.state == 3) // 环cycle
         {
-            color = sf::Color::Red; // 纯红色，更显眼
+            color = sf::Color::Red; // 红色
             thickness = 5.0;
         }
 
@@ -101,10 +96,12 @@ void Visualizer::drawScene(int nodeCount, Node* nodes, int totalCost, std::vecto
         name.setString(nodes[i].name);
         name.setCharacterSize(16);
         name.setFillColor(sf::Color::White); // 白色文字
+
         // 居中显示文字
         sf::FloatRect textRect = name.getLocalBounds();
         name.setOrigin(textRect.left + textRect.width/2.0f, textRect.top  + textRect.height/2.0f);
         name.setPosition(nodes[i].x, nodes[i].y - 35); // 放在圆圈上方
+
 
         window->draw(name);
 

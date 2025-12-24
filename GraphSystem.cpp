@@ -12,16 +12,20 @@ void GraphSystem::redraw(Visualizer& visualizer) {
 
 void GraphSystem::waitForInput(sf::RenderWindow& window, Visualizer& visualizer, int currentCost) {
     bool pressed = false;
-    while (window.isOpen() && !pressed) {
+    while (window.isOpen() && !pressed)
+        {
         sf::Event event;
-        while (window.pollEvent(event)) {
-            if (event.type == sf::Event::Closed) {
-                window.close();
-                return;
-            }
+        while (window.pollEvent(event))
+            {
+                if (event.type == sf::Event::Closed)
+                {
+                    window.close();
+                    return;
+                }
             // 处理窗口大小调整
-            if (event.type == sf::Event::Resized) {
-                // 移除手动 View 更新，让 SFML 自动拉伸内容
+            if (event.type == sf::Event::Resized)
+            {
+
                 // 重绘
                 visualizer.drawScene(nodeCount, nodes, currentCost, visualEdges);
             }
