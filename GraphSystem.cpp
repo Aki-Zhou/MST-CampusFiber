@@ -164,7 +164,7 @@ void GraphSystem::runKruskal(sf::RenderWindow& window, Visualizer& visualizer) {
 
     while (!heap.isEmpty() && edgesCount < nodeCount - 1) {
 
-        // === 修改点 1：在这里“卡住”，等待你按回车 ===
+        // 等待回车
         waitForInput(window, visualizer, totalCost);
 
         // 如果等待期间窗口关了，就退出
@@ -181,7 +181,8 @@ void GraphSystem::runKruskal(sf::RenderWindow& window, Visualizer& visualizer) {
         sf::sleep(sf::milliseconds(300));
 
         // 2. 判断逻辑
-        if (uf.unite(e.u, e.v)) {
+        if (uf.unite(e.u, e.v))
+        {
             // 成功：变绿
             edgesCount++;
             totalCost += e.weight;

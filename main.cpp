@@ -61,10 +61,6 @@ int main()
         {
             if (event.type == sf::Event::Closed)
                 window.close();
-            if (event.type == sf::Event::Resized)
-            {
-                // 移除手动 View 更新，让 SFML 自动拉伸内容
-            }
         }
         // 持续重绘以保持画面更新
         System.redraw(visualizer);

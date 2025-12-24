@@ -16,7 +16,7 @@ bool Visualizer::loadFont(const char* filename)
     return font.loadFromFile(filename);
 }
 
-void Visualizer::drawScene(int nodeCount, Node* nodes, int totalCost, std::vector<Edge>& edges)
+void Visualizer::drawScene(int nodeCount, Node* nodes, int totalCost, std::vector<Edge>& edges) const
 {
     window->clear(sf::Color(30, 30, 30)); // 改为深灰色背景
 
@@ -49,7 +49,7 @@ void Visualizer::drawScene(int nodeCount, Node* nodes, int totalCost, std::vecto
         else if (e.state == 3) // 环cycle
         {
             color = sf::Color::Red; // 红色
-            thickness = 5.0;
+            thickness = 4.0;
         }
 
         sf::Vector2f p1(nodes[e.u].x, nodes[e.u].y);
@@ -83,7 +83,7 @@ void Visualizer::drawScene(int nodeCount, Node* nodes, int totalCost, std::vecto
     //3.绘制节点
     for (int i=0;i < nodeCount;++i)
     {
-        sf::CircleShape c(20); // 稍微加大一点
+        sf::CircleShape c(20);
         c.setOrigin(20,20);
         c.setPosition(nodes[i].x,nodes[i].y);
         c.setFillColor(sf::Color(70,130,180)); // 钢蓝色
