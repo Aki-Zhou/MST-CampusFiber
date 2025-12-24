@@ -21,8 +21,7 @@ void GraphSystem::waitForInput(sf::RenderWindow& window, Visualizer& visualizer,
             }
             // 处理窗口大小调整
             if (event.type == sf::Event::Resized) {
-                sf::FloatRect visibleArea(0, 0, static_cast<float>(event.size.width), static_cast<float>(event.size.height));
-                window.setView(sf::View(visibleArea));
+                // 移除手动 View 更新，让 SFML 自动拉伸内容
                 // 重绘
                 visualizer.drawScene(nodeCount, nodes, currentCost, visualEdges);
             }

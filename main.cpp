@@ -63,11 +63,7 @@ int main()
                 window.close();
             if (event.type == sf::Event::Resized)
             {
-                // 1. 获取新的窗口大小
-                sf::FloatRect visibleArea(0, 0, static_cast<float>(event.size.width), static_cast<float>(event.size.height));
-
-                // 2. 更新 View 以匹配新的窗口尺寸
-                window.setView(sf::View(visibleArea));
+                // 移除手动 View 更新，让 SFML 自动拉伸内容
             }
         }
         // 持续重绘以保持画面更新
