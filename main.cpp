@@ -48,6 +48,14 @@ int main()
         {
             if (event.type == sf::Event::Closed)
                 window.close();
+            if (event.type == sf::Event::Resized)
+            {
+                // 1. 获取新的窗口大小
+                sf::FloatRect visibleArea(0, 0, event.size.width, event.size.height);
+
+                // 2. 更新 View 以匹配新的窗口尺寸
+                window.setView(sf::View(visibleArea));
+            }
         }
     }
     return 0;

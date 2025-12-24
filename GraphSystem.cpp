@@ -21,7 +21,6 @@ void waitUserEnter(sf::RenderWindow& window) {
                 pressed = true; // 退出等待循环
             }
         }
-        // 稍微睡一小会儿，避免 CPU 占用 100%
         sf::sleep(sf::milliseconds(10));
     }
 }
@@ -104,15 +103,16 @@ bool GraphSystem::initFromFile(const char* file)
     {
         nodes[i].id = i;
         fscanf(fp,"%s %f %f",nodes[i].name,&nodes[i].x,&nodes[i].y);
-        int u,v,w;
-        while (fscanf(fp,"%d %d %d",&u,&v,&w) != EOF)
-        {
-            Edge e = {u,v,w,0};
-            heap.Push(e);
-            visualEdges.push_back(e);
-        }
-        fclose(fp);
     }
+
+    int u,v,w;
+    while (fscanf(fp,"%d %d %d",&u,&v,&w) != EOF)
+    {
+        Edge e = {u,v,w,0};
+        heap.Push(e);
+        visualEdges.push_back(e);
+    }
+    fclose(fp);
     return true;
 }
 
