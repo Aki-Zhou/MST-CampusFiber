@@ -12,7 +12,20 @@ int main()
     cout << "3. 从文件加载图" << endl;
     cout << "请选择初始化方式: " << endl;
     int choice;
-    cin >> choice;
+    while (true)
+        {
+        if (cin >> choice)
+            {
+            if (choice >= 1 && choice <= 3) break;
+            cout << "无效选择，请输入 1-3: ";
+        }
+        else
+        {
+            cout << "输入错误，请输入数字: ";
+            cin.clear();
+            cin.ignore(10000, '\n');
+        }
+    }
     if (choice == 1)
         System.initRandom(7);
     else if (choice == 2)
