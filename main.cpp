@@ -64,12 +64,14 @@ int main()
             if (event.type == sf::Event::Resized)
             {
                 // 1. 获取新的窗口大小
-                sf::FloatRect visibleArea(0, 0, event.size.width, event.size.height);
+                sf::FloatRect visibleArea(0, 0, static_cast<float>(event.size.width), static_cast<float>(event.size.height));
 
                 // 2. 更新 View 以匹配新的窗口尺寸
                 window.setView(sf::View(visibleArea));
             }
         }
+        // 持续重绘以保持画面更新
+        System.redraw(visualizer);
     }
     return 0;
 }
