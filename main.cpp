@@ -26,7 +26,7 @@ int main()
         }
     }
     //创建窗口
-    sf::RenderWindow window(sf::VideoMode(800,600),"Kruskal最小生成树算法可视化");
+    sf::RenderWindow window(sf::VideoMode(800,600),"KruskalMST");
     window.setFramerateLimit(60);
     //实例化
     Visualizer visualizer(&window);
