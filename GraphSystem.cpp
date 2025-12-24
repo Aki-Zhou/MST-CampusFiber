@@ -66,8 +66,15 @@ void GraphSystem::initManual()
 {
     heap.init();
     visualEdges.clear();
-    std::cout << "请输入节点个数: " << std::endl;
-    std::cin >> nodeCount;
+
+    while (true) {
+        std::cout << "请输入节点个数 (2-20): " << std::endl;
+        if (std::cin >> nodeCount && nodeCount >= 2 && nodeCount <= 20) break;
+        std::cout << "输入无效，请输入 2 到 20 之间的整数。" << std::endl;
+        std::cin.clear();
+        std::cin.ignore(10000, '\n');
+    }
+
     uf.init(nodeCount);
 
     std::cout << "请依次输入节点名称 X坐标 Y坐标: " << std::endl;
@@ -77,13 +84,27 @@ void GraphSystem::initManual()
         std::cin >> nodes[i].name >> nodes[i].x >> nodes[i].y;
     }
     int m;
-    std::cout << "请输入边的数量: " << std::endl;
-    std::cin >> m;
+    while (true) {
+        std::cout << "请输入边的数量: " << std::endl;
+        if (std::cin >> m && m >= 0) break;
+        std::cout << "输入无效，请输入非负整数。" << std::endl;
+        std::cin.clear();
+        std::cin.ignore(10000, '\n');
+    }
+
     std::cout << "请依次输入边的起点 终点 权重: " << std::endl;
     for (int i=0;i < m;++i)
     {
         int u,v,w;
-        std::cin >> u >> v >> w;
+        while (true) {
+            std::cin >> u >> v >> w;
+            if (!std::cin.fail() && u >= 0 && u < nodeCount && v >= 0 && v < nodeCount && w > 0) {
+                break;
+            }
+            std::cout << "输入错误 (起点/终点应在 0-" << nodeCount-1 << " 之间，权重>0)，请重新输入: ";
+            std::cin.clear();
+            std::cin.ignore(10000, '\n');
+        }
         Edge e  = {u,v,w,0};
         heap.Push(e);
         visualEdges.push_back(e);
