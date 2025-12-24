@@ -1,7 +1,6 @@
 #ifndef MYPROJECT_GRAPHSYSTEM_H
 #define MYPROJECT_GRAPHSYSTEM_H
 #pragma once
-#include "Common.h"
 #include "Visualizer.h"
 #include "DataStructure.h"
 #include <vector>

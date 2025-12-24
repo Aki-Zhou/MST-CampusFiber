@@ -1,7 +1,7 @@
 #ifndef MYPROJECT_VISUALIZER_H
 #define MYPROJECT_VISUALIZER_H
 #pragma once
-#include "Common.h"
+#include "DataStructure.h"
 #include <SFML/Graphics.hpp>
 #include <vector>
 class Visualizer

@@ -1,7 +1,23 @@
 #ifndef MYPROJECT_DATASTRUCTURE_H
 #define MYPROJECT_DATASTRUCTURE_H
 #pragma once
-#include "Common.h"
+
+constexpr int MAX_Nodes = 100;
+constexpr int MAX_Edges = 100;
+
+struct Node
+{
+    int id;
+    float x,y;
+    char name[50];
+};
+
+struct Edge
+{
+    int u,v;
+    int weight;
+    int state;
+};
 class  MinHeap
 {
     Edge data[MAX_Edges];
