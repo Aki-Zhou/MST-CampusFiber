@@ -32,8 +32,7 @@ void Visualizer::drawScene(int nodeCount, Node* nodes, int totalCost, std::vecto
     status.setCharacterSize(20);
     status.setFillColor(sf::Color::White); // 改为白色文字
     status.setPosition(15,15);
-    status.setString("Total Cost: " + std::to_string(totalCost) +
-        "\nYellow: Checking | Green: Linked | Red: Loop");
+    status.setString("Total Cost: " + std::to_string(totalCost) );
     window->draw(status);
 
     //2.绘制边

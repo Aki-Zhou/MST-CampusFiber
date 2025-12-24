@@ -4,10 +4,13 @@
 #include <cstdlib>
 #include <ctime>
 #include <thread> // sleep
-GraphSystem::GraphSystem(): nodeCount(0) {}
+GraphSystem::GraphSystem(): nodeCount(0), totalCost(0) {}
 
-// === 新增的辅助函数：等待用户按下回车键 ===
-void waitUserEnter(sf::RenderWindow& window) {
+void GraphSystem::redraw(Visualizer& visualizer) {
+    visualizer.drawScene(nodeCount, nodes, totalCost, visualEdges);
+}
+
+void GraphSystem::waitForInput(sf::RenderWindow& window, Visualizer& visualizer, int currentCost) {
     bool pressed = false;
     while (window.isOpen() && !pressed) {
         sf::Event event;
@@ -15,6 +18,13 @@ void waitUserEnter(sf::RenderWindow& window) {
             if (event.type == sf::Event::Closed) {
                 window.close();
                 return;
+            }
+            // 处理窗口大小调整
+            if (event.type == sf::Event::Resized) {
+                sf::FloatRect visibleArea(0, 0, static_cast<float>(event.size.width), static_cast<float>(event.size.height));
+                window.setView(sf::View(visibleArea));
+                // 重绘
+                visualizer.drawScene(nodeCount, nodes, currentCost, visualEdges);
             }
             // 如果按下了键盘，并且按的是 Enter 键
             if (event.type == sf::Event::KeyPressed && event.key.code == sf::Keyboard::Enter) {
@@ -144,7 +154,7 @@ void GraphSystem::drawInitialScene(Visualizer& visualizer)
 }
 void GraphSystem::runKruskal(sf::RenderWindow& window, Visualizer& visualizer) {
     int edgesCount = 0;
-    int totalCost = 0;
+    totalCost = 0; // 使用成员变量
 
     // 先刷新一下初始画面，防止白屏
     visualizer.drawScene(nodeCount, nodes, totalCost, visualEdges);
@@ -152,7 +162,7 @@ void GraphSystem::runKruskal(sf::RenderWindow& window, Visualizer& visualizer) {
     while (!heap.isEmpty() && edgesCount < nodeCount - 1) {
 
         // === 修改点 1：在这里“卡住”，等待你按回车 ===
-        waitUserEnter(window);
+        waitForInput(window, visualizer, totalCost);
 
         // 如果等待期间窗口关了，就退出
         if(!window.isOpen()) break;
