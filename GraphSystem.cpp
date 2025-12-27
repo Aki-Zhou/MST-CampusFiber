@@ -188,7 +188,9 @@ void GraphSystem::runKruskal(sf::RenderWindow& window, Visualizer& visualizer) {
             edgesCount++;
             totalCost += e.weight;
             updateEdgeState(e.u, e.v, 2);
-        } else {
+        }
+        else
+        {
             // 失败：变红
             updateEdgeState(e.u, e.v, 3);
             visualizer.drawScene(nodeCount, nodes, totalCost, visualEdges, false);

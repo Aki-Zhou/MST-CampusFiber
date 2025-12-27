@@ -35,7 +35,7 @@ void Visualizer::drawScene(int nodeCount, Node* nodes, int totalCost, std::vecto
         completedText.setFont(font);
         completedText.setCharacterSize(20);
         completedText.setFillColor(sf::Color::Cyan);
-        completedText.setPosition(15, 40); // Position below Total Cost
+        completedText.setPosition(15, 40);
         completedText.setString("MST Completed");
         window->draw(completedText);
     }
@@ -96,7 +96,7 @@ void Visualizer::drawScene(int nodeCount, Node* nodes, int totalCost, std::vecto
         sf::CircleShape c(20);
         c.setOrigin(20,20);
         c.setPosition(nodes[i].x,nodes[i].y);
-        c.setFillColor(sf::Color(70,130,180)); // 钢蓝色
+        c.setFillColor(sf::Color(70,130,180)); // 蓝色
         c.setOutlineThickness(2);
         c.setOutlineColor(sf::Color::White); // 白色边框
         window->draw(c);
