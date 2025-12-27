@@ -4,10 +4,10 @@
 #include <cstdlib>
 #include <ctime>
 #include <thread> // sleep
-GraphSystem::GraphSystem(): nodeCount(0), totalCost(0) {}
+GraphSystem::GraphSystem(): nodeCount(0), totalCost(0), isCompleted(false) {}
 
 void GraphSystem::redraw(Visualizer& visualizer) {
-    visualizer.drawScene(nodeCount, nodes, totalCost, visualEdges);
+    visualizer.drawScene(nodeCount, nodes, totalCost, visualEdges, isCompleted);
 }
 
 void GraphSystem::waitForInput(sf::RenderWindow& window, Visualizer& visualizer, int currentCost) {
@@ -27,7 +27,7 @@ void GraphSystem::waitForInput(sf::RenderWindow& window, Visualizer& visualizer,
             {
 
                 // 重绘
-                visualizer.drawScene(nodeCount, nodes, currentCost, visualEdges);
+                visualizer.drawScene(nodeCount, nodes, currentCost, visualEdges, false);
             }
             // 如果按下了键盘，并且按的是 Enter 键
             if (event.type == sf::Event::KeyPressed && event.key.code == sf::Keyboard::Enter) {
@@ -152,15 +152,16 @@ bool GraphSystem::initFromFile(const char* file)
 
 void GraphSystem::drawInitialScene(Visualizer& visualizer)
 {
-    visualizer.drawScene(nodeCount,nodes,0,visualEdges);
+    visualizer.drawScene(nodeCount,nodes,0,visualEdges, false);
 
 }
 void GraphSystem::runKruskal(sf::RenderWindow& window, Visualizer& visualizer) {
     int edgesCount = 0;
     totalCost = 0; // 使用成员变量
+    isCompleted = false;
 
     // 先刷新一下初始画面，防止白屏
-    visualizer.drawScene(nodeCount, nodes, totalCost, visualEdges);
+    visualizer.drawScene(nodeCount, nodes, totalCost, visualEdges, false);
 
     while (!heap.isEmpty() && edgesCount < nodeCount - 1) {
 
@@ -174,7 +175,7 @@ void GraphSystem::runKruskal(sf::RenderWindow& window, Visualizer& visualizer) {
 
         // 1. 变成黄色 (扫描中)
         updateEdgeState(e.u, e.v, 1);
-        visualizer.drawScene(nodeCount, nodes, totalCost, visualEdges);
+        visualizer.drawScene(nodeCount, nodes, totalCost, visualEdges, false);
 
         // 这里保留一个短促的自动停顿 (0.3秒)，
         // 让你能感觉到“它正在思考”的过程，而不是瞬间变绿，视觉效果更好。
@@ -190,7 +191,7 @@ void GraphSystem::runKruskal(sf::RenderWindow& window, Visualizer& visualizer) {
         } else {
             // 失败：变红
             updateEdgeState(e.u, e.v, 3);
-            visualizer.drawScene(nodeCount, nodes, totalCost, visualEdges);
+            visualizer.drawScene(nodeCount, nodes, totalCost, visualEdges, false);
 
             // 延长红色显示时间，让用户能看清
             sf::sleep(sf::milliseconds(800));
@@ -199,6 +200,8 @@ void GraphSystem::runKruskal(sf::RenderWindow& window, Visualizer& visualizer) {
         }
 
         // 刷新最终状态
-        visualizer.drawScene(nodeCount, nodes, totalCost, visualEdges);
+        visualizer.drawScene(nodeCount, nodes, totalCost, visualEdges, false);
     }
+    isCompleted = true;
+    visualizer.drawScene(nodeCount, nodes, totalCost, visualEdges, true);
 }

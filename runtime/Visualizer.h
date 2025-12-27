@@ -11,6 +11,6 @@ class Visualizer
 public:
     Visualizer(sf::RenderWindow *win);
     bool loadFont(const char* filename);
-    void drawScene(int nodeCount, Node* nodes,int totalCost,std::vector<Edge>& edges);
+    void drawScene(int nodeCount, Node* nodes,int totalCost,std::vector<Edge>& edges, bool isCompleted = false) const;
 };
 #endif

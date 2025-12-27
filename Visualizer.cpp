@@ -16,7 +16,7 @@ bool Visualizer::loadFont(const char* filename)
     return font.loadFromFile(filename);
 }
 
-void Visualizer::drawScene(int nodeCount, Node* nodes, int totalCost, std::vector<Edge>& edges) const
+void Visualizer::drawScene(int nodeCount, Node* nodes, int totalCost, std::vector<Edge>& edges, bool isCompleted) const
 {
     window->clear(sf::Color(30, 30, 30)); // 改为深灰色背景
 
@@ -29,6 +29,16 @@ void Visualizer::drawScene(int nodeCount, Node* nodes, int totalCost, std::vecto
     status.setPosition(15,15);
     status.setString("Total Cost: " + std::to_string(totalCost) );
     window->draw(status);
+
+    if (isCompleted) {
+        sf::Text completedText;
+        completedText.setFont(font);
+        completedText.setCharacterSize(20);
+        completedText.setFillColor(sf::Color::Cyan);
+        completedText.setPosition(15, 40); // Position below Total Cost
+        completedText.setString("MST Completed");
+        window->draw(completedText);
+    }
 
     //2.绘制边
     for ( auto& e : edges)
