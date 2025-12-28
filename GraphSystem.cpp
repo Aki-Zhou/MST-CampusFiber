@@ -12,7 +12,7 @@ void GraphSystem::redraw(Visualizer& visualizer)
     visualizer.drawScene(nodeCount, nodes, totalCost, visualEdges, logs, isCompleted);
 }
 
-// 等待用户输入（回车键）继续下一步，同时处理窗口事件
+// 等待回车键继续下一步，同时处理窗口事件
 void GraphSystem::waitForInput(sf::RenderWindow& window, Visualizer& visualizer, int currentCost) {
     bool pressed = false;
     while (window.isOpen() && !pressed)
@@ -46,6 +46,7 @@ void GraphSystem::updateEdgeState(int u, int v, int state)
 {
     for (auto& e : visualEdges)
     {
+        // 找到对应的边（无向图，需要检查两个方向）
         if ((e.u == u && e.v == v) || (e.u == v && e.v == u))
         {
             e.state = state;
@@ -58,16 +59,16 @@ void GraphSystem::updateEdgeState(int u, int v, int state)
 void GraphSystem::initRandom(int n)
 {
     nodeCount = n;
-    srand(time(nullptr));
-    heap.init();
-    uf.init(n);
+    srand(time(nullptr)); // 设置随机数种子
+    heap.init(); // 初始化堆
+    uf.init(n);  // 初始化并查集
     visualEdges.clear();
     logs.clear();
     for (int i=0;i < n;++i)//生成节点
     {
         nodes[i].id = i;
-        nodes[i].x = rand() % 700 +50; // 随机坐标
-        nodes[i].y = rand() % 500 + 50;
+        nodes[i].x = rand() % 700 + 100; // 随机X坐标 (100-750)
+        nodes[i].y = rand() % 500 + 50; // 随机Y坐标 (50-550)
         sprintf(nodes[i].name,"Node %d",i);
     }
     // 生成完全图的边（每两个节点之间都有一条边）
@@ -77,8 +78,8 @@ void GraphSystem::initRandom(int n)
         {
             int w= rand() % 100 + 10; // 随机权重
             Edge e = {i,j,w,0};
-            heap.Push(e); // 加入堆
-            visualEdges.push_back(e); // 加入可视化列表
+            heap.Push(e); // 加入最小堆，自动排序
+            visualEdges.push_back(e); // 加入可视化列表，用于显示
         }
     }
 }
@@ -95,8 +96,8 @@ void GraphSystem::initManual()
         std::cout << "请输入节点个数 (2-20): " << std::endl;
         if (std::cin >> nodeCount && nodeCount >= 2 && nodeCount <= 20) break;
         std::cout << "输入无效，请输入 2 到 20 之间的整数。" << std::endl;
-        std::cin.clear();
-        std::cin.ignore(10000, '\n');
+        std::cin.clear(); // 清除错误标志
+        std::cin.ignore(10000, '\n'); // 忽略缓冲区内容
     }
 
     uf.init(nodeCount);
@@ -175,8 +176,8 @@ void GraphSystem::drawInitialScene(Visualizer& visualizer)
 
 // Kruskal算法主流程
 void GraphSystem::runKruskal(sf::RenderWindow& window, Visualizer& visualizer) {
-    int edgesCount = 0;
-    totalCost = 0; // 使用成员变量
+    int edgesCount = 0; // 已选择的边数
+    totalCost = 0; // 使用成员变量记录总权重
     isCompleted = false;
     logs.clear();
 
@@ -210,7 +211,7 @@ void GraphSystem::runKruskal(sf::RenderWindow& window, Visualizer& visualizer) {
             totalCost += e.weight;
             updateEdgeState(e.u, e.v, 2);
 
-            // 添加日志
+            // 添加日志：记录连接成功的边
             char buffer[100];
             sprintf(buffer, "Connect: %s - %s (w:%d)", nodes[e.u].name, nodes[e.v].name, e.weight);
             logs.push_back(std::string(buffer));
@@ -220,7 +221,7 @@ void GraphSystem::runKruskal(sf::RenderWindow& window, Visualizer& visualizer) {
             // 失败：形成环，丢弃，变红
             updateEdgeState(e.u, e.v, 3);
 
-            // 添加日志
+            // 添加日志：记录形成环的边
             char buffer[100];
             sprintf(buffer, "Cycle: %s - %s (w:%d)", nodes[e.u].name, nodes[e.v].name, e.weight);
             logs.push_back(std::string(buffer));
@@ -236,10 +237,10 @@ void GraphSystem::runKruskal(sf::RenderWindow& window, Visualizer& visualizer) {
         visualizer.drawScene(nodeCount, nodes, totalCost, visualEdges, logs, false);
     }
 
-    isCompleted = true; // 标记完成
+    isCompleted = true; // 标记算法完成
     visualizer.drawScene(nodeCount, nodes, totalCost, visualEdges, logs, true);
 
-    // 结束后等待关闭
+    // 结束后等待关闭，保持窗口显示结果
     while (window.isOpen())
     {
         sf::Event event;
