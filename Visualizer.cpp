@@ -11,17 +11,18 @@ Visualizer::Visualizer(sf::RenderWindow* win)
     this->window = win;
 }
 
+// 加载字体，用于显示文本
 bool Visualizer::loadFont(const char* filename)
 {
     return font.loadFromFile(filename);
 }
 
+// 核心绘制函数：每一帧都会调用此函数来更新画面
 void Visualizer::drawScene(int nodeCount, Node* nodes, int totalCost, std::vector<Edge>& edges, const std::vector<std::string>& logs, bool isCompleted) const
 {
-    window->clear(sf::Color(30, 30, 30)); // 改为深灰色背景
+    window->clear(sf::Color(30, 30, 30)); // 清除上一帧内容，使用深灰色背景
 
-    //1绘制状态栏
-
+    // 1. 绘制状态栏（左上角）
     sf::Text status;
     status.setFont(font);
     status.setCharacterSize(20);
@@ -30,27 +31,32 @@ void Visualizer::drawScene(int nodeCount, Node* nodes, int totalCost, std::vecto
     status.setString("Total Cost: " + std::to_string(totalCost) );
     window->draw(status);
 
-    int logY = 45;
+    int logY = 45; // 日志起始Y坐标
 
+    // 如果算法完成，显示完成提示
     if (isCompleted) {
         sf::Text completedText;
         completedText.setFont(font);
         completedText.setCharacterSize(20);
-        completedText.setFillColor(sf::Color::Cyan);
+        completedText.setFillColor(sf::Color::Green);
         completedText.setPosition(15, logY);
         completedText.setString("MST Completed");
         window->draw(completedText);
         logY += 30;
     }
 
+    // 绘制操作日志
     for (const auto& log : logs) {
         sf::Text logText;
         logText.setFont(font);
         logText.setCharacterSize(16);
 
+        // 如果是环路检测日志，显示为红色
         if (log.find("Cycle:") == 0) {
              logText.setFillColor(sf::Color(255, 100, 100)); // Light Red
-        } else {
+        }
+        else
+        {
              logText.setFillColor(sf::Color::White);
         }
 
@@ -60,32 +66,32 @@ void Visualizer::drawScene(int nodeCount, Node* nodes, int totalCost, std::vecto
         logY += 20;
     }
 
-    //2.绘制边
+    // 2. 绘制边
     for ( auto& e : edges)
     {
-        sf::Color color = sf::Color(100, 100, 100); // 默认深灰色
+        sf::Color color = sf::Color(100, 100, 100); // 默认深灰色（未处理）
         float thickness = 2.0;
 
-        if (e.state == 1) // 检查
+        if (e.state == 1) // 正在扫描（黄色）
         {
-            color = sf::Color(255, 215, 0); // 黄色
+            color = sf::Color(255, 215, 0);
             thickness = 4.0;
         }
-        else if (e.state == 2) // 联通
+        else if (e.state == 2) // 已加入MST（绿色）
         {
-            color = sf::Color(50, 205, 50); // 绿色
+            color = sf::Color(50, 205, 50);
             thickness = 4.0;
         }
-        else if (e.state == 3) // 环cycle
+        else if (e.state == 3) // 形成环路，被丢弃（红色）
         {
-            color = sf::Color::Red; // 红色
+            color = sf::Color::Red;
             thickness = 4.0;
         }
 
         sf::Vector2f p1(nodes[e.u].x, nodes[e.u].y);
         sf::Vector2f p2(nodes[e.v].x, nodes[e.v].y);
 
-        // 计算线的长度和角度
+        // 计算线的长度和角度，以便使用矩形绘制带宽度的线
         float dx = p2.x - p1.x;
         float dy = p2.y - p1.y;
         float length = std::sqrt(dx*dx + dy*dy);
@@ -99,7 +105,7 @@ void Visualizer::drawScene(int nodeCount, Node* nodes, int totalCost, std::vecto
 
         window->draw(line);
 
-        // 绘制边的权重文字
+        // 绘制边的权重文字，显示在边的中点
         sf::Text weightText;
         weightText.setFont(font);
         weightText.setString(std::to_string(e.weight));
@@ -110,17 +116,18 @@ void Visualizer::drawScene(int nodeCount, Node* nodes, int totalCost, std::vecto
         weightText.setPosition((p1.x + p2.x) / 2, (p1.y + p2.y) / 2);
         window->draw(weightText);
     }
-    //3.绘制节点
+    // 3. 绘制节点
     for (int i=0;i < nodeCount;++i)
     {
-        sf::CircleShape c(20);
-        c.setOrigin(20,20);
+        sf::CircleShape c(20); // 半径20
+        c.setOrigin(20,20);    // 中心点
         c.setPosition(nodes[i].x,nodes[i].y);
-        c.setFillColor(sf::Color(70,130,180)); // 蓝色
+        c.setFillColor(sf::Color(70,130,180)); // 钢蓝色
         c.setOutlineThickness(2);
         c.setOutlineColor(sf::Color::White); // 白色边框
         window->draw(c);
 
+        // 绘制节点名称
         sf::Text name;
         name.setFont(font);
         name.setString(nodes[i].name);
@@ -135,7 +142,7 @@ void Visualizer::drawScene(int nodeCount, Node* nodes, int totalCost, std::vecto
 
         window->draw(name);
 
-        // 在圆圈中间显示ID
+        // 在圆圈中间显示节点ID
         sf::Text idText;
         idText.setFont(font);
         idText.setString(std::to_string(nodes[i].id));
@@ -146,5 +153,5 @@ void Visualizer::drawScene(int nodeCount, Node* nodes, int totalCost, std::vecto
         idText.setPosition(nodes[i].x, nodes[i].y);
         window->draw(idText);
     }
-    window->display();
+    window->display(); // 刷新窗口显示
 }
