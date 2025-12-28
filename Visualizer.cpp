@@ -16,7 +16,7 @@ bool Visualizer::loadFont(const char* filename)
     return font.loadFromFile(filename);
 }
 
-void Visualizer::drawScene(int nodeCount, Node* nodes, int totalCost, std::vector<Edge>& edges, bool isCompleted) const
+void Visualizer::drawScene(int nodeCount, Node* nodes, int totalCost, std::vector<Edge>& edges, const std::vector<std::string>& logs, bool isCompleted) const
 {
     window->clear(sf::Color(30, 30, 30)); // 改为深灰色背景
 
@@ -30,14 +30,34 @@ void Visualizer::drawScene(int nodeCount, Node* nodes, int totalCost, std::vecto
     status.setString("Total Cost: " + std::to_string(totalCost) );
     window->draw(status);
 
+    int logY = 45;
+
     if (isCompleted) {
         sf::Text completedText;
         completedText.setFont(font);
         completedText.setCharacterSize(20);
         completedText.setFillColor(sf::Color::Cyan);
-        completedText.setPosition(15, 40);
+        completedText.setPosition(15, logY);
         completedText.setString("MST Completed");
         window->draw(completedText);
+        logY += 30;
+    }
+
+    for (const auto& log : logs) {
+        sf::Text logText;
+        logText.setFont(font);
+        logText.setCharacterSize(16);
+
+        if (log.find("Cycle:") == 0) {
+             logText.setFillColor(sf::Color(255, 100, 100)); // Light Red
+        } else {
+             logText.setFillColor(sf::Color::White);
+        }
+
+        logText.setPosition(15, logY);
+        logText.setString(log);
+        window->draw(logText);
+        logY += 20;
     }
 
     //2.绘制边

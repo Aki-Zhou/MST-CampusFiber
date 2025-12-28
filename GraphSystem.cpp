@@ -7,7 +7,7 @@
 GraphSystem::GraphSystem(): nodeCount(0), totalCost(0), isCompleted(false) {}
 
 void GraphSystem::redraw(Visualizer& visualizer) {
-    visualizer.drawScene(nodeCount, nodes, totalCost, visualEdges, isCompleted);
+    visualizer.drawScene(nodeCount, nodes, totalCost, visualEdges, logs, isCompleted);
 }
 
 void GraphSystem::waitForInput(sf::RenderWindow& window, Visualizer& visualizer, int currentCost) {
@@ -27,7 +27,7 @@ void GraphSystem::waitForInput(sf::RenderWindow& window, Visualizer& visualizer,
             {
 
                 // 重绘
-                visualizer.drawScene(nodeCount, nodes, currentCost, visualEdges, false);
+                visualizer.drawScene(nodeCount, nodes, currentCost, visualEdges, logs, false);
             }
             // 如果按下了键盘，并且按的是 Enter 键
             if (event.type == sf::Event::KeyPressed && event.key.code == sf::Keyboard::Enter) {
@@ -57,6 +57,7 @@ void GraphSystem::initRandom(int n)
     heap.init();
     uf.init(n);
     visualEdges.clear();
+    logs.clear();
     for (int i=0;i < n;++i)//生成节点
     {
         nodes[i].id = i;
@@ -79,6 +80,7 @@ void GraphSystem::initManual()
 {
     heap.init();
     visualEdges.clear();
+    logs.clear();
 
     while (true) {
         std::cout << "请输入节点个数 (2-20): " << std::endl;
@@ -128,6 +130,7 @@ bool GraphSystem::initFromFile(const char* file)
 {
     heap.init();
     visualEdges.clear();
+    logs.clear();
     FILE* fp = fopen(file,"r");
     if (fp == nullptr)
         return false;
@@ -152,16 +155,17 @@ bool GraphSystem::initFromFile(const char* file)
 
 void GraphSystem::drawInitialScene(Visualizer& visualizer)
 {
-    visualizer.drawScene(nodeCount,nodes,0,visualEdges, false);
+    visualizer.drawScene(nodeCount,nodes,0,visualEdges, logs, false);
 
 }
 void GraphSystem::runKruskal(sf::RenderWindow& window, Visualizer& visualizer) {
     int edgesCount = 0;
     totalCost = 0; // 使用成员变量
     isCompleted = false;
+    logs.clear();
 
     // 先刷新一下初始画面，防止白屏
-    visualizer.drawScene(nodeCount, nodes, totalCost, visualEdges, false);
+    visualizer.drawScene(nodeCount, nodes, totalCost, visualEdges, logs, false);
 
     while (!heap.isEmpty() && edgesCount < nodeCount - 1) {
 
@@ -175,7 +179,7 @@ void GraphSystem::runKruskal(sf::RenderWindow& window, Visualizer& visualizer) {
 
         // 1. 变成黄色 (扫描中)
         updateEdgeState(e.u, e.v, 1);
-        visualizer.drawScene(nodeCount, nodes, totalCost, visualEdges, false);
+        visualizer.drawScene(nodeCount, nodes, totalCost, visualEdges, logs, false);
 
         // 这里保留一个短促的自动停顿 (0.3秒)，
         // 让你能感觉到“它正在思考”的过程，而不是瞬间变绿，视觉效果更好。
@@ -188,12 +192,23 @@ void GraphSystem::runKruskal(sf::RenderWindow& window, Visualizer& visualizer) {
             edgesCount++;
             totalCost += e.weight;
             updateEdgeState(e.u, e.v, 2);
+
+            // Add log
+            char buffer[100];
+            sprintf(buffer, "Connect: %s - %s (w:%d)", nodes[e.u].name, nodes[e.v].name, e.weight);
+            logs.push_back(std::string(buffer));
         }
         else
         {
             // 失败：变红
             updateEdgeState(e.u, e.v, 3);
-            visualizer.drawScene(nodeCount, nodes, totalCost, visualEdges, false);
+
+            // Add log
+            char buffer[100];
+            sprintf(buffer, "Cycle: %s - %s (w:%d)", nodes[e.u].name, nodes[e.v].name, e.weight);
+            logs.push_back(std::string(buffer));
+
+            visualizer.drawScene(nodeCount, nodes, totalCost, visualEdges, logs, false);
 
             // 延长红色显示时间，让用户能看清
             sf::sleep(sf::milliseconds(800));
@@ -201,9 +216,21 @@ void GraphSystem::runKruskal(sf::RenderWindow& window, Visualizer& visualizer) {
             updateEdgeState(e.u, e.v, 0); // 变回灰色
         }
 
-        // 刷新最终状态
-        visualizer.drawScene(nodeCount, nodes, totalCost, visualEdges, false);
+        visualizer.drawScene(nodeCount, nodes, totalCost, visualEdges, logs, false);
     }
+
     isCompleted = true;
-    visualizer.drawScene(nodeCount, nodes, totalCost, visualEdges, true);
+    visualizer.drawScene(nodeCount, nodes, totalCost, visualEdges, logs, true);
+
+    // 结束后等待关闭
+    while (window.isOpen())
+    {
+        sf::Event event;
+        while (window.pollEvent(event))
+        {
+            if (event.type == sf::Event::Closed)
+                window.close();
+        }
+    }
 }
+
