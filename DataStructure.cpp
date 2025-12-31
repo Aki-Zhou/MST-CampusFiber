@@ -50,12 +50,12 @@ void MinHeap::Push(Edge e)
 // 下沉操作：当堆顶元素被移除或替换后，将新的根节点向下移动到合适位置
 void MinHeap::siftDown(int index)
 {
-    int current = index;
-    Edge temp = data[current]; // 保存当前需要下沉的元素
+    int i = index;
+    Edge temp = data[i]; // 保存当前需要下沉的元素
 
-    while (current * 2 + 1 < size)
+    while (i * 2 + 1 < size)
     {
-        int child = 2 * current + 1; // 左孩子
+        int child = 2 * i + 1; // 左孩子
 
         // 如果有右孩子，且右孩子更小，则选择右孩子
         if (child + 1 < size && data[child + 1].weight < data[child].weight)
@@ -64,10 +64,10 @@ void MinHeap::siftDown(int index)
         if (data[child].weight >= temp.weight)
             break;
         // 否则，孩子节点上移
-        data[current] = data[child];
-        current = child;
+        data[i] = data[child];
+        i = child;
     }
-    data[current] = temp; // 将元素放入最终位置
+    data[i] = temp; // 将元素放入最终位置
 }
 
 // 弹出堆顶元素最小权重的边，并将最后一个元素移到堆顶后下沉

@@ -53,7 +53,7 @@ void Visualizer::drawScene(int nodeCount, Node* nodes, int totalCost, std::vecto
 
         // 如果是环路检测日志，显示为红色
         if (log.find("Cycle:") == 0) {
-             logText.setFillColor(sf::Color(255, 100, 100)); // Light Red
+             logText.setFillColor(sf::Color(255, 100, 100));
         }
         else
         {

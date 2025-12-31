@@ -181,7 +181,7 @@ void GraphSystem::runKruskal(sf::RenderWindow& window, Visualizer& visualizer) {
     isCompleted = false;
     logs.clear();
 
-    // 先刷新一下初始画面，防止白屏
+    // 先刷新一下初始画面，防x止白屏
     visualizer.drawScene(nodeCount, nodes, totalCost, visualEdges, logs, false);
 
     // 循环直到堆为空或已选出 n-1 条边
@@ -223,12 +223,12 @@ void GraphSystem::runKruskal(sf::RenderWindow& window, Visualizer& visualizer) {
 
             // 添加日志：记录形成环的边
             char buffer[100];
-            sprintf(buffer, "Cycle: %s - %s (w:%d)", nodes[e.u].name, nodes[e.v].name, e.weight);
+            sprintf(buffer, "Cycle: %s - %s (w:%d)", nodes[e.u].name, nodes[e.v].name, e.weight);//可能不安全，可改
             logs.push_back(std::string(buffer));
 
             visualizer.drawScene(nodeCount, nodes, totalCost, visualEdges, logs, false);
 
-            // 延长红色显示时间，让用户能看清
+            // 延长红色显示时间
             sf::sleep(sf::milliseconds(800));
 
             updateEdgeState(e.u, e.v, 0); // 变回灰色

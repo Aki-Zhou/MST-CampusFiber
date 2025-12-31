@@ -27,6 +27,7 @@ class  MinHeap
     Edge data[MAX_Edges]; // 堆数组
     int size;             // 当前堆大小
     void siftDown(int index); // 下沉操作，维护堆性质
+    void siftUp(int index);   // 上浮操作
 public:
     MinHeap();
     void init();          // 初始化堆
@@ -42,7 +43,7 @@ private:
     int parent[MAX_Nodes]; // 父节点数组
 public:
     void init(int n);      // 初始化并查集，每个节点自成一个集合
-    int find(int x);       // 查找节点所属集合的根节点（带路径压缩）
+    int find(int x);       // 查找节点所属集合的根节点
     bool unite(int x, int y); // 合并两个集合，如果已经在同一集合返回false
 };
 #endif //MYPROJECT_DATASTRUCTURE_H
