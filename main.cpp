@@ -4,12 +4,12 @@
 #include "Visualizer.h"
 using namespace std;
 
-// 主函数：程序入口
+//主函数：程序入口
 int main()
 {
     GraphSystem System;
 
-    // 显示菜单
+    //显示菜单
     cout << "=== 最小生成树的校园光缆铺设 ===" << endl;
     cout << "1. 随机生成图" << endl;
     cout << "2. 手动输入图" << endl;
@@ -17,7 +17,7 @@ int main()
     cout << "请选择输入方式: " << endl;
 
     int choice;
-    // 输入验证循环
+    //输入验证循环
     while (true)
         {
         if (cin >> choice)
@@ -33,41 +33,41 @@ int main()
         }
     }
 
-    // 根据选择初始化图
+    //根据选择初始化图
     if (choice == 1)
-        System.initRandom(7); // 随机生成7个节点
+        System.initRandom(7); //随机生成7个节点
     else if (choice == 2)
-        System.initManual(); // 手动输入
+        System.initManual(); //手动输入
     else if (choice == 3)
     {
-        if (!System.initFromFile("data.txt")) { // 从文件读取
+        if (!System.initFromFile("data.txt")) { //从文件读取
             std::cout << "File error!\n";
             system("pause");
             return 0;
         }
     }
 
-    // 创建SFML窗口
+    //创建SFML窗口
     sf::RenderWindow window(sf::VideoMode(800,600),"KruskalMST");
-    window.setFramerateLimit(60); // 限制帧率
+    window.setFramerateLimit(60); //限制帧率
 
-    // 实例化可视化器
+    //实例化可视化器
     Visualizer visualizer(&window);
-    if (!visualizer.loadFont("font.ttf")) // 加载字体
+    if (!visualizer.loadFont("font.ttf")) //加载字体
     {
         cout << "字体加载失败!" << endl;
         system("pause");
         return -1;
     }
 
-    // 绘制初始场景
+    //绘制初始场景
     System.drawInitialScene(visualizer);
-    sf::sleep(sf::seconds(1)); // 停顿1秒
+    sf::sleep(sf::seconds(1)); //停顿1秒
 
-    // 运行Kruskal算法演示
+    //运行Kruskal算法演示
     System.runKruskal(window,visualizer);
 
-    // 保持窗口打开，直到用户关闭
+    //保持窗口打开，直到用户关闭
     while (window.isOpen())
     {
         sf::Event event;
@@ -76,7 +76,7 @@ int main()
             if (event.type == sf::Event::Closed)
                 window.close();
         }
-        // 持续重绘以保持画面更新
+        //持续重绘以保持画面更新
         System.redraw(visualizer);
     }
     return 0;

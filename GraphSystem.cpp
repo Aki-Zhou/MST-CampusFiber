@@ -19,12 +19,12 @@ void GraphSystem::waitForInput(sf::RenderWindow& window, Visualizer& visualizer,
         {
         sf::Event event;
         while (window.pollEvent(event))
+        {
+            if (event.type == sf::Event::Closed)
             {
-                if (event.type == sf::Event::Closed)
-                {
-                    window.close();
-                    return;
-                }
+                window.close();
+                return;
+            }
             // 处理窗口大小调整
             if (event.type == sf::Event::Resized)
             {
@@ -195,15 +195,14 @@ void GraphSystem::runKruskal(sf::RenderWindow& window, Visualizer& visualizer) {
 
         Edge e = heap.Pop(); // 取出权重最小的边
 
-        // 1. 变成黄色 (扫描中)
+        // 变成黄色 (扫描中)
         updateEdgeState(e.u, e.v, 1);
         visualizer.drawScene(nodeCount, nodes, totalCost, visualEdges, logs, false);
 
-        // 这里保留一个短促的自动停顿 (0.3秒)，
-        // 让你能感觉到“它正在思考”的过程，而不是瞬间变绿，视觉效果更好。
+        // 这里保留一个自动停顿
         sf::sleep(sf::milliseconds(300));
 
-        // 2. 判断逻辑：使用并查集判断是否形成环
+        // 判断逻辑：使用并查集判断是否形成环
         if (uf.unite(e.u, e.v))
         {
             // 成功：不形成环，加入MST，变绿
@@ -211,9 +210,9 @@ void GraphSystem::runKruskal(sf::RenderWindow& window, Visualizer& visualizer) {
             totalCost += e.weight;
             updateEdgeState(e.u, e.v, 2);
 
-            // 添加日志：记录连接成功的边
+            // 记录连接成功的边
             char buffer[100];
-            sprintf(buffer, "Connect: %s - %s (w:%d)", nodes[e.u].name, nodes[e.v].name, e.weight);
+            sprintf(buffer, "Connect: %s - %s (w:%d)", nodes[e.u].name, nodes[e.v].name, e.weight);//可能不安全，可改
             logs.push_back(std::string(buffer));
         }
         else
@@ -228,7 +227,7 @@ void GraphSystem::runKruskal(sf::RenderWindow& window, Visualizer& visualizer) {
 
             visualizer.drawScene(nodeCount, nodes, totalCost, visualEdges, logs, false);
 
-            // 延长红色显示时间
+            // 红色显示时间
             sf::sleep(sf::milliseconds(800));
 
             updateEdgeState(e.u, e.v, 0); // 变回灰色
