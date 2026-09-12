@@ -14,6 +14,12 @@ bool MinHeap::isEmpty()
     return size == 0;
 }
 
+//判断堆是否已满
+bool MinHeap::isFull()
+{
+    return size >= MAX_Edges;
+}
+
 //上浮操作：将新插入的节点向上移动到合适位置
 //维护最小堆性质：父节点的权重必须小于等于子节点的权重
 void MinHeap::siftUp(int index)
@@ -36,15 +42,17 @@ void MinHeap::siftUp(int index)
 }
 
 //将边插入堆中，并执行上浮操作以维护最小堆性质
-void MinHeap::Push(Edge e)
+//返回false表示堆已满、该边被丢弃（调用方应据此提示用户，否则MST会静默不完整）
+bool MinHeap::Push(Edge e)
 {
     //检查堆是否已满
     if (size >= MAX_Edges)
-        return;
+        return false;
 
     data[size] = e; //将新元素放入堆的末尾
     siftUp(size);   //对新加入的元素执行上浮操作，调整其位置
     size++;         //堆的大小加1
+    return true;
 }
 
 //下沉操作：当堆顶元素被移除或替换后，将新的根节点向下移动到合适位置

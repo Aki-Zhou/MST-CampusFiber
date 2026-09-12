@@ -58,6 +58,10 @@ void GraphSystem::updateEdgeState(int u, int v, int state)
 // 随机初始化图：生成n个节点和随机边
 void GraphSystem::initRandom(int n)
 {
+    //限定在数组容量内，否则下面写 nodes[i] 会越界
+    if (n < 2) n = 2;
+    if (n > MAX_Nodes) n = MAX_Nodes;
+
     nodeCount = n;
     srand(time(nullptr)); // 设置随机数种子
     heap.init(); // 初始化堆
@@ -72,16 +76,22 @@ void GraphSystem::initRandom(int n)
         sprintf(nodes[i].name,"Node %d",i);
     }
     // 生成完全图的边（每两个节点之间都有一条边）
+    int dropped = 0; //完全图的边数是 C(n,2)，n 较大时会超出堆容量
     for (int i=0;i < n;++i)
     {
         for (int j=i + 1;j < n;++j)
         {
             int w= rand() % 100 + 10; // 随机权重
             Edge e = {i,j,w,0};
-            heap.Push(e); // 加入最小堆，自动排序
+            if (!heap.Push(e)) // 加入最小堆，自动排序
+                ++dropped;
             visualEdges.push_back(e); // 加入可视化列表，用于显示
         }
     }
+    if (dropped > 0)
+        std::cout << "警告: 节点数 " << n << " 生成 " << n*(n-1)/2 << " 条边，超出最小堆容量 "
+                  << MAX_Edges << "，有 " << dropped << " 条边被丢弃，结果可能不完整。建议节点数不超过 14。"
+                  << std::endl;
 }
 
 // 手动输入图数据
@@ -121,6 +131,7 @@ void GraphSystem::initManual()
 
     // 输入边信息
     std::cout << "请依次输入边的起点 终点 权重: " << std::endl;
+    int dropped = 0; //边数超过堆容量时会被丢弃
     for (int i=0;i < m;++i)
     {
         int u,v,w;
@@ -134,9 +145,13 @@ void GraphSystem::initManual()
             std::cin.ignore(10000, '\n');
         }
         Edge e  = {u,v,w,0};
-        heap.Push(e);
+        if (!heap.Push(e))
+            ++dropped;
         visualEdges.push_back(e);
     }
+    if (dropped > 0)
+        std::cout << "警告: 最小堆容量为 " << MAX_Edges << " 条边，有 " << dropped
+                  << " 条边被丢弃，生成结果可能不完整" << std::endl;
 }
 
 // 从文件读取图数据
@@ -148,22 +163,55 @@ bool GraphSystem::initFromFile(const char* file)
     FILE* fp = fopen(file,"r");
     if (fp == nullptr)
         return false;
-    fscanf(fp,"%d",&nodeCount);
+
+    //读取节点数量，并校验其落在数组容量范围内
+    if (fscanf(fp,"%d",&nodeCount) != 1 || nodeCount < 1 || nodeCount > MAX_Nodes)
+    {
+        std::cout << "文件格式错误: 节点数量必须是 1-" << MAX_Nodes << " 之间的整数" << std::endl;
+        fclose(fp);
+        return false;
+    }
+
     uf.init(nodeCount);
     for (int i=0;i < nodeCount; ++i)
     {
         nodes[i].id = i;
-        fscanf(fp,"%s %f %f",nodes[i].name,&nodes[i].x,&nodes[i].y);
+        //任一节点信息读不全就报错退出，避免后续用到未初始化的坐标和名称
+        if (fscanf(fp,"%s %f %f",nodes[i].name,&nodes[i].x,&nodes[i].y) != 3)
+        {
+            std::cout << "文件格式错误: 第 " << i+1 << " 个节点的名称/坐标读取失败" << std::endl;
+            fclose(fp);
+            return false;
+        }
     }
 
     int u,v,w;
-    while (fscanf(fp,"%d %d %d",&u,&v,&w) != EOF)
+    int skipped = 0; //非法边计数
+    int dropped = 0; //因堆满而丢弃的边计数
+    //用 ==3 判断完整读到一条边，可同时正确处理空行和文件结尾
+    while (fscanf(fp,"%d %d %d",&u,&v,&w) == 3)
     {
+        //校验端点编号与权重。越界的端点会让 find()/nodes[] 访问未初始化内存
+        if (u < 0 || u >= nodeCount || v < 0 || v >= nodeCount || w <= 0)
+        {
+            std::cout << "警告: 忽略非法边 (" << u << ", " << v << ", " << w
+                      << ")，端点须在 0-" << nodeCount - 1 << " 之间且权重大于0" << std::endl;
+            ++skipped;
+            continue;
+        }
         Edge e = {u,v,w,0};
-        heap.Push(e);
+        if (!heap.Push(e))
+            ++dropped; //堆满,该边不参与算法,但仍在画面上显示为灰色
         visualEdges.push_back(e);
     }
     fclose(fp);
+
+    if (dropped > 0)
+        std::cout << "警告: 最小堆容量为 " << MAX_Edges << " 条边，有 " << dropped
+                  << " 条边未能进入堆，生成结果可能不完整" << std::endl;
+    if (skipped > 0)
+        std::cout << "共忽略 " << skipped << " 条非法边" << std::endl;
+
     return true;
 }
 

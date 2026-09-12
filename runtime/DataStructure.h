@@ -31,9 +31,10 @@ class  MinHeap
 public:
     MinHeap();
     void init();          //初始化堆
-    void Push(Edge e);    //入堆
+    bool Push(Edge e);    //入堆，返回false表示堆已满、该边被丢弃
     Edge Pop();           //出堆（取出最小权重的边）
     bool isEmpty();       //判断堆是否为空
+    bool isFull();        //判断堆是否已满
 };
 
 //并查集类，用于判断两个节点是否连通，以及合并连通分量
